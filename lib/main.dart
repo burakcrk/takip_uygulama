@@ -101,6 +101,7 @@ class _AnaSayfaState extends State<AnaSayfa> {
         title: Text("Masturnasyonel Takip Uygulaması"),
         backgroundColor: const Color.fromARGB(255, 43, 255, 0), // Başlık rengi
       ),
+
       // Uygulamanın gövdesi
       // Padding ile 4 yönden ana gövdenin kenarlarına boşluklar koymuş olduk
       body: Padding(
@@ -111,7 +112,57 @@ class _AnaSayfaState extends State<AnaSayfa> {
           mainAxisAlignment: MainAxisAlignment.center, // Her şeyi ortaya hizala
           // raf içerisindeki eşyalar
           children: [
-
+            // 0. BİLEŞEN: TARİH BARI
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  Icon(Icons.menu, size: 30),
+                  ElevatedButton(
+                    onPressed: () {}, // Şimdilik butona basınca bir şey olmayacak
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: const Color(0xFFD63E63), // Koyu pembe
+                      foregroundColor: Colors.white,
+                    ),
+                    child: Text("Bugün", style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
+                  ),
+                  Icon(Icons.calendar_month, size: 30),
+                ],
+            ),
+            // 1. BİLEŞEN: TAKVİM BARI
+            SizedBox(
+              height: 100, // Takvim şeridinin yüksekliği
+              child: ListView.builder(
+                scrollDirection: Axis.horizontal, // SİHİR BURADA: Yatay kaydırma
+                itemCount: 30, // Şimdilik 30 tane kutu çizelim
+                itemBuilder: (context, index) {
+                  return Container(
+                    width: 60,
+                    margin: const EdgeInsets.symmetric(horizontal: 4),
+                    decoration: BoxDecoration(
+                      color: Colors.white,
+                      borderRadius: BorderRadius.circular(30), // Hap şekli
+                    ),
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        Text("Gün", style: TextStyle(color: Colors.black87)),
+                        SizedBox(height: 8),
+                        Container(
+                          padding: EdgeInsets.all(8),
+                          decoration: BoxDecoration(
+                            shape: BoxShape.circle,
+                            color: Colors.grey.shade200,
+                          ),
+                          // index 0'dan başladığı için +1 ekleyerek 1, 2, 3 diye yazdırıyoruz
+                          child: Text("${index + 1}", style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16)),
+                        ),
+                      ],
+                    ),
+                  );
+                },
+              ),
+            ),
+            SizedBox(height: 20),
             // 1. BİLEŞEN: TEXTBOX (Giriş Kutusu)
             TextField(
               controller: t1, // Casusumuzu buraya atadık
