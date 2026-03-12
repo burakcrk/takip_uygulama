@@ -92,129 +92,157 @@ class _AnaSayfaState extends State<AnaSayfa> {
     );
   }
 
+  void buguneDon() {
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Text("Bu butonun fonksiyonu henüz tanımlanmadı"), // Mesaj içeriği
+        duration: Duration(seconds: 2), // Ne kadar ekranda kalsın?
+        backgroundColor: Colors.red, // Arkaplan rengi
+      ),
+    );
+  }
+
   @override
   // setState her tetiklendiğinde burası çalışır
   Widget build(BuildContext context) {
     return Scaffold(
-      // Yukarıdaki bar
-      appBar: AppBar(
-        title: Text("Masturnasyonel Takip Uygulaması"),
-        backgroundColor: const Color.fromARGB(255, 43, 255, 0), // Başlık rengi
-      ),
+      backgroundColor: const Color(0xFFFCEEED), // Arkaplan Rengi
 
-      // Uygulamanın gövdesi
-      // Padding ile 4 yönden ana gövdenin kenarlarına boşluklar koymuş olduk
-      body: Padding(
-        padding: const EdgeInsets.all(10.0), // Kenarlardan bıraktığımız boşluk 10 birim
-        // Gövde içerisinde yapıları dizmek  için oluşturduğumuz raf sistemi
-        // "Column" ile dikey bir şekilde sıralama yaparız
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center, // Her şeyi ortaya hizala
-          // raf içerisindeki eşyalar
-          children: [
-            // 0. BİLEŞEN: TARİH BARI
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+      body: SafeArea(
+        child: Padding(
+          padding: const EdgeInsets.all(16.0),
+
+          child: Column(
+            children: [
+
+              // 0. BİLEŞEN: EN ÜST BAR (SIDEBAR, TODAY, CALENDER)
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
                   Icon(Icons.menu, size: 30),
                   ElevatedButton(
-                    onPressed: () {}, // Şimdilik butona basınca bir şey olmayacak
+                    onPressed: buguneDon,
                     style: ElevatedButton.styleFrom(
-                      backgroundColor: const Color(0xFFD63E63), // Koyu pembe
+                      backgroundColor: const Color(0xFFD63E63),
                       foregroundColor: Colors.white,
                     ),
                     child: Text("Bugün", style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
                   ),
                   Icon(Icons.calendar_month, size: 30),
                 ],
-            ),
-            // 1. BİLEŞEN: TAKVİM BARI
-            SizedBox(
-              height: 100, // Takvim şeridinin yüksekliği
-              child: ListView.builder(
-                scrollDirection: Axis.horizontal, // SİHİR BURADA: Yatay kaydırma
-                itemCount: 30, // Şimdilik 30 tane kutu çizelim
-                itemBuilder: (context, index) {
-                  return Container(
-                    width: 60,
-                    margin: const EdgeInsets.symmetric(horizontal: 4),
-                    decoration: BoxDecoration(
-                      color: Colors.white,
-                      borderRadius: BorderRadius.circular(30), // Hap şekli
-                    ),
-                    child: Column(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        Text("Gün", style: TextStyle(color: Colors.black87)),
-                        SizedBox(height: 8),
-                        Container(
-                          padding: EdgeInsets.all(8),
-                          decoration: BoxDecoration(
-                            shape: BoxShape.circle,
-                            color: Colors.grey.shade200,
-                          ),
-                          // index 0'dan başladığı için +1 ekleyerek 1, 2, 3 diye yazdırıyoruz
-                          child: Text("${index + 1}", style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16)),
+              ),
+
+              // --ARA BOŞLUK--
+              SizedBox(height: 20),
+
+              // 1. BİLEŞEN: TAKVİM BARI
+              SizedBox(
+                height: 100, // Takvimin yüksekliği
+                child: ListView.builder(
+                  scrollDirection: Axis.horizontal, 
+                  itemCount: 30, 
+                  itemBuilder: (context, index) {
+                    DateTime dongudekiTarih = DateTime.now().subtract(const Duration(days: 15)).add(Duration(days: index));
+                    bool buGunSeciliMi = dongudekiTarih.day == seciliTarih.day && 
+                                         dongudekiTarih.month == seciliTarih.month && 
+                                         dongudekiTarih.year == seciliTarih.year;
+
+                    return GestureDetector( 
+                      onTap: () {
+                        setState(() { seciliTarih = dongudekiTarih; });
+                      },
+                      child: Container(
+                        width: 60,
+                        margin: const EdgeInsets.symmetric(horizontal: 4),
+                        decoration: BoxDecoration(
+                          color: buGunSeciliMi ? const Color(0xFFD63E63) : Colors.white, 
+                          borderRadius: BorderRadius.circular(30), 
                         ),
-                      ],
-                    ),
-                  );
-                },
+                        child: Column(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            Text(
+                              turkceGunler[dongudekiTarih.weekday], 
+                              style: TextStyle(
+                                color: buGunSeciliMi ? Colors.white : Colors.black87, 
+                                fontWeight: buGunSeciliMi ? FontWeight.bold : FontWeight.normal,
+                              ),
+                            ),
+                            SizedBox(height: 8),
+                            Container(
+                              padding: EdgeInsets.all(8),
+                              decoration: BoxDecoration(
+                                shape: BoxShape.circle,
+                                color: buGunSeciliMi ? Colors.transparent : Colors.grey.shade200, 
+                              ),
+                              child: Text(
+                                dongudekiTarih.day.toString(), 
+                                style: TextStyle(
+                                  fontWeight: FontWeight.bold, 
+                                  fontSize: 16,
+                                  color: buGunSeciliMi ? Colors.white : Colors.black, 
+                                )
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                    );
+                  },
+                ),
               ),
-            ),
-            SizedBox(height: 20),
-            // 1. BİLEŞEN: TEXTBOX (Giriş Kutusu)
-            TextField(
-              controller: t1, // Casusumuzu buraya atadık
-              decoration: InputDecoration(
-                border: OutlineInputBorder(), // Kutunun etrafına çizgi çeker
-                labelText: "Yazı Yazın", // İpucu yazısı
+
+              // --ARA BOŞLUK--
+              SizedBox(height: 20),
+
+              // 3. BİLEŞEN: TEXTBOX (Giriş Kutusu)
+              TextField(
+                controller: t1,
+                decoration: InputDecoration(
+                  border: OutlineInputBorder(),
+                  labelText: "Yazı Yazın",
+                  fillColor: Colors.white, 
+                  filled: true,
+                ),
               ),
-            ),
-            
-            SizedBox(height: 20), // Araya boşluk koyar
 
-            // 2. BİLEŞEN: BUTONLAR
-            Row(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                Expanded(
-                  child: ElevatedButton(
-                  onPressed: mesajEkle, // Tıklanınca yukarıdaki fonksiyonu çalıştır
-                  child: Text("Yazıyı Gönder"),
+              // --ARA BOŞLUK--
+              SizedBox(height: 20),
+
+              // 4. BİLEŞEN: BUTONLAR
+              Row(
+                children: [
+                  Expanded(child: ElevatedButton(onPressed: mesajEkle, child: Text("Gönder"))),
+                  SizedBox(width: 5), // Butonlar arası yatay boşluk
+                  Expanded(child: ElevatedButton(onPressed: sonMesajSil, child: Text("Son Sil"))),
+                  SizedBox(width: 5), // Butonlar arası yatay boşluk
+                  Expanded(child: ElevatedButton(onPressed: tumMesajSil, child: Text("Tüm Sil"))),
+                ],
+              ),
+
+              // --ARA BOŞLUK--
+              SizedBox(height: 20),
+
+              // 5. BİLEŞEN: KAYIT GEÇMİŞİ
+              Expanded(
+                child: SingleChildScrollView( 
+                  // İçerik tamamen doldurursa ekranı yukarı/aşağı kaydırmayı sağlar
+                  child: Text(
+                    mesajListesi.join("\n\n"),
+                    textAlign: TextAlign.center,
+                    style: TextStyle(fontSize: 20, color: Colors.deepPurple),
                   ),
                 ),
-                
-                SizedBox(width: 10), // Araya boşluk koyar
+              ),
 
-                Expanded(
-                  child: ElevatedButton(
-                  onPressed: sonMesajSil, // Tıklanınca yukarıdaki fonksiyonu çalıştır
-                  child: Text("Son Yazıyı Sil"),
-                  ),
-                ),
-
-                SizedBox(width: 10), // Araya boşluk koyar
-
-                Expanded(
-                  child: ElevatedButton(
-                  onPressed: tumMesajSil, // Tıklanınca yukarıdaki fonksiyonu çalıştır
-                  child: Text("Tüm Yazıları Sil"),
-                  ),
-                ),
-              ],
-            ),
-
-            SizedBox(height: 20), // Araya boşluk koyar
-
-            // 3. BİLEŞEN: SONUÇ ETİKETİ (Label)
-            Text(
-              mesajListesi.join("\n\n"), // Yukarıdaki değişkeni burada gösteriyoruz
-              style: TextStyle(fontSize: 24, color: Colors.deepPurple), // Yazı tipi ayarı
-            ),
-          ],
+            ], 
+          ),
         ),
       ),
+
+
+
+
     );
   }
 }

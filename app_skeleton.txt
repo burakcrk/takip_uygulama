@@ -1,0 +1,42 @@
+Scaffold (Uygulamanın Ana Tuvali / Kareli Kağıt Zemini)
+ │
+ └── SafeArea (Telefonun üst saat/çentik kısmını koruyan alan)
+      │
+      └── Padding (Ekranın sağından solundan bırakılan nefes alma boşlukları)
+           │
+           └── Column (Ana Omurga: İçine giren her şeyi yukarıdan aşağıya dizer)
+                ├── 1. KISIM: ÜST BİLGİ/MENÜ BARI
+                │    └── Row (Öğeleri yan yana dizer)
+                │         ├── Icon (Sol üst menü ikonu)
+                │         ├── Text / Button (Ortadaki başlık veya 'Bugün' yazısı)
+                │         └── Icon (Sağ üst takvim ikonu)
+                │
+                ├── SizedBox (Araya dikey boşluk)
+                │
+                ├── 2. KISIM: TAKVİM ŞERİDİ
+                │    └── SizedBox (Şeride sabit bir yükseklik verir)
+                │         └── ListView.builder (Yatay eksende kaydırılabilir liste)
+                │              └── Container (Her bir gün için çizilen kutucuklar)
+                │                   └── Column (Kutunun içine gün adını ve sayısını alt alta koyar)
+                │
+                ├── SizedBox (Araya dikey boşluk)
+                │
+                ├── 3. KISIM: METİN GİRİŞİ
+                │    └── TextField (Kullanıcının not girdiği o büyük kutu)
+                │
+                ├── SizedBox (Araya dikey boşluk)
+                │
+                ├── 4. KISIM: AKSİYON BUTONLARI
+                │    └── Row (Butonları yan yana dizer)
+                │         ├── Expanded -> ElevatedButton (Gönder butonu)
+                │         ├── SizedBox (Butonlar arası yatay boşluk)
+                │         ├── Expanded -> ElevatedButton (Son Sil butonu)
+                │         ├── SizedBox (Butonlar arası yatay boşluk)
+                │         └── Expanded -> ElevatedButton (Tüm Sil butonu)
+                │
+                ├── SizedBox (Araya dikey boşluk)
+                │
+                └── 5. KISIM: KAYIT GEÇMİŞİ (LİSTE)
+                     └── Expanded (Ekranın aşağısında kalan TÜM boşluğu buraya tahsis eder)
+                          └── SingleChildScrollView (Geçmiş kayıtlar ekranı aşarsa aşağı kaydırmayı sağlar)
+                               └── Text (Girilen tüm logların alt alta yazıldığı yer)
