@@ -1,47 +1,39 @@
-// 1. Flutter'ın görsel kütüphanesini çağırdık.
 import 'package:flutter/material.dart';
 
-// 2. Uygulamayı başlatan komut.
 void main() {
   runApp(const BenimUygulamam());
 }
 
-// 3. Uygulamanın temelini oluşturan class
-// Uygulamanın temel ayarlarını ve başlatıldığında neler olacağını ayarlar
-// Buradaki yapılar uygulama çalışırken değişmeyeceği için StatelessWidget olarak tanımladık
 class BenimUygulamam extends StatelessWidget {
   const BenimUygulamam({super.key});
-  
+
   @override
-  // MaterialApp uygulamanın temel widget'i gibi bir şey
   Widget build(BuildContext context) {
     return MaterialApp(
-      debugShowCheckedModeBanner: false, // Sağ üstteki "Debug" bandını kaldırır
-      home: AnaIskelet(),
+      debugShowCheckedModeBanner: false,
+      home: AnaIskelet(), 
     );
   }
 }
 
 // ====================================================================
-// --- ANA İSKELET (SABİT MENÜYÜ VE SAYFALARI YÖNETEN BEYİN) ---
+// --- ANA İSKELET ---
 // ====================================================================
 
-// AnaIskelet widgeti
-// AnaIskelet içerisindeki yapılar uygulama çalışırken değişebileceği için StatefulWidget olarak tanımladık
 class AnaIskelet extends StatefulWidget {
-  const AnaIskelet({super.key}); // EKLENEN SATIR BURASI
+  const AnaIskelet({super.key});
 
   @override
-  // Anasayfa içerisindeki işlemleri yapması için _AnaIskeletState() sınıfını oluşturur
   State<AnaIskelet> createState() => _AnaIskeletState();
 }
 
 class _AnaIskeletState extends State<AnaIskelet> {
-  // --- MERKEZİ VERİLER ---
-  // SİHİRLİ DEĞİŞKEN: Hangi sekmede olduğumuzu tutar. Başlangıçta 0 (Ana Sayfa)
-  int seciliMenuIndex = 0;
-
+  int seciliMenuIndex = 0; 
   String eklemeTuru = "Görev"; 
+  
+  // YENİ: ComboBox (Açılır Liste) için değişkenlerimiz
+  String secilenGorevTipi = "Tek Seferlik";
+  final List<String> gorevTipleri = ["Tek Seferlik", "Rutin"];
 
   List<String> mesajListesi = [];
   int sayac = 1;
@@ -49,7 +41,6 @@ class _AnaIskeletState extends State<AnaIskelet> {
   final List<String> turkceGunler = ["", "Pzt", "Sal", "Çar", "Per", "Cum", "Cmt", "Paz"];
   TextEditingController t1 = TextEditingController();
 
-  // --- FONKSİYONLAR ---
   void buguneDon() {
     setState(() { seciliTarih = DateTime.now(); });
   }
@@ -57,16 +48,20 @@ class _AnaIskeletState extends State<AnaIskelet> {
   void mesajEkle() {
     setState(() {
       if (t1.text.isNotEmpty) {
-        mesajListesi.insert(0, "$sayac. [$eklemeTuru] - ${t1.text}");
+        // Listeye eklerken artık "Rutin" mi "Tek Seferlik" mi onu da yazdırıyoruz
+        mesajListesi.insert(0, "$sayac. [$secilenGorevTipi] - ${t1.text}");
         sayac++;
         t1.clear();
         
-        // MÜKEMMEL UX DOKUNUŞU: Görev eklenince otomatik Ana Sayfaya (listeye) dön!
-        seciliMenuIndex = 0; 
+        seciliMenuIndex = 0; // İşlem bitince ana sayfaya dön
+        
+        // Ekleme sonrası ComboBox'ı tekrar varsayılana çekelim
+        secilenGorevTipi = "Tek Seferlik"; 
       }
     });
   }
 
+  // SİLME İŞLEMLERİ ARTIK SADECE ANA SAYFADA (Listeyi temizlemek için koda dokunmadık ama ekrandan kaldırdık)
   void sonMesajSil() {
     setState(() {
       if (mesajListesi.isNotEmpty) {
@@ -75,7 +70,6 @@ class _AnaIskeletState extends State<AnaIskelet> {
       }
     });
   }
-
   void tumMesajSil() {
     setState(() {
       mesajListesi.clear();
@@ -87,35 +81,28 @@ class _AnaIskeletState extends State<AnaIskelet> {
     showModalBottomSheet(
       context: context,
       shape: const RoundedRectangleBorder(
-        borderRadius: BorderRadius.vertical(top: Radius.circular(25.0)), // Üst köşeleri yuvarlat
+        borderRadius: BorderRadius.vertical(top: Radius.circular(25.0)), 
       ),
       builder: (BuildContext context) {
         return Container(
           padding: const EdgeInsets.all(20),
-          height: 250, // Menünün yüksekliği
+          height: 250, 
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              const Text(
-                "Ne eklemek istersiniz?", 
-                style: TextStyle(fontSize: 22, fontWeight: FontWeight.bold)
-              ),
+              const Text("Ne eklemek istersiniz?", style: TextStyle(fontSize: 22, fontWeight: FontWeight.bold)),
               const SizedBox(height: 20),
-              
-              // 1. SEÇENEK: GÖREV
               ListTile(
                 leading: const Icon(Icons.check_circle_outline, color: Colors.blue, size: 30),
                 title: const Text("Yeni Görev", style: TextStyle(fontSize: 18)),
                 onTap: () {
-                  Navigator.pop(context); // Önce alttan açılan menüyü kapat
+                  Navigator.pop(context); 
                   setState(() { 
-                    eklemeTuru = "Görev"; // Türü belirle
-                    seciliMenuIndex = 2;  // Ekleme sayfasına git
+                    eklemeTuru = "Görev"; 
+                    seciliMenuIndex = 2; 
                   });
                 },
               ),
-              
-              // 2. SEÇENEK: NOT
               ListTile(
                 leading: const Icon(Icons.note_alt_outlined, color: Colors.orange, size: 30),
                 title: const Text("Yeni Not", style: TextStyle(fontSize: 18)),
@@ -134,15 +121,12 @@ class _AnaIskeletState extends State<AnaIskelet> {
     );
   }
 
-
   // ====================================================================
-  // --- 1. SAYFA: ANA SAYFA ---
+  // --- SAYFA 1: ANA SAYFA ---
   // ====================================================================
-
   Widget _buildAnaSayfa() {
     return Column(
       children: [
-        // ÜST BİLGİ / MENÜ BARI
         Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
@@ -160,7 +144,6 @@ class _AnaIskeletState extends State<AnaIskelet> {
         ),
         SizedBox(height: 20), 
 
-        // TAKVİM ŞERİDİ
         SizedBox(
           height: 100,
           child: ListView.builder(
@@ -215,7 +198,17 @@ class _AnaIskeletState extends State<AnaIskelet> {
         ),
         SizedBox(height: 20),
 
-        // KAYIT GEÇMİŞİ
+        // Test amaçlı silme butonlarını şimdilik ana sayfanın altına küçükçe ekledim
+        // (İlerde bunları görevlerin yanına "çöp kutusu" ikonu olarak koyacağız)
+        if(mesajListesi.isNotEmpty)
+          Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              TextButton(onPressed: sonMesajSil, child: Text("Son Sil", style: TextStyle(color: Colors.red))),
+              TextButton(onPressed: tumMesajSil, child: Text("Tümünü Sil", style: TextStyle(color: Colors.red))),
+            ],
+          ),
+
         Expanded(
           child: SingleChildScrollView( 
             child: Text(
@@ -232,32 +225,90 @@ class _AnaIskeletState extends State<AnaIskelet> {
   }
 
   // ====================================================================
-  // --- SAYFA 2: GÖREV EKLEME SAYFASI ---
+  // --- SAYFA 2: YENİ GÜNCEL GÖREV EKLEME SAYFASI ---
   // ====================================================================
   Widget _buildGorevEklemeSayfasi() {
     return Column(
-      mainAxisAlignment: MainAxisAlignment.center,
+      crossAxisAlignment: CrossAxisAlignment.stretch, // İçindeki elemanları sağa sola tam yayar
       children: [
-        Text("YENİ KAYIT EKLE", style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold, color: const Color(0xFFD63E63))),
-        SizedBox(height: 30),
+        // 1. SOL ÜST GERİ BUTONU VE BAŞLIK
+        Row(
+          children: [
+            IconButton(
+              icon: const Icon(Icons.arrow_back, size: 30),
+              onPressed: () {
+                setState(() {
+                  seciliMenuIndex = 0; // Geri butonuna basınca Ana Sayfaya dön
+                });
+              },
+            ),
+            const Expanded(
+              child: Text(
+                "Kayıt Ekle", 
+                textAlign: TextAlign.center,
+                style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold, color: Color(0xFFD63E63))
+              ),
+            ),
+            const SizedBox(width: 48), // Başlığı tam ortalamak için sol ikon kadar sağa boşluk bıraktık
+          ],
+        ),
+        const SizedBox(height: 30),
+
+        // 2. COMBOBOX (DropdownButton)
+        Container(
+          padding: const EdgeInsets.symmetric(horizontal: 15, vertical: 5),
+          decoration: BoxDecoration(
+            color: Colors.white,
+            borderRadius: BorderRadius.circular(10),
+            border: Border.all(color: Colors.grey.shade400),
+          ),
+          child: DropdownButtonHideUnderline( // Altındaki varsayılan siyah çizgiyi gizler
+            child: DropdownButton<String>(
+              value: secilenGorevTipi,
+              isExpanded: true, // Kutuyu tam genişliğe yayar
+              icon: const Icon(Icons.arrow_drop_down, size: 30),
+              items: gorevTipleri.map((String tip) {
+                return DropdownMenuItem<String>(
+                  value: tip,
+                  child: Text(tip, style: const TextStyle(fontSize: 18)),
+                );
+              }).toList(),
+              onChanged: (String? yeniSecim) {
+                if (yeniSecim != null) {
+                  setState(() {
+                    secilenGorevTipi = yeniSecim; // Seçimi güncelle
+                  });
+                }
+              },
+            ),
+          ),
+        ),
+        const SizedBox(height: 20),
+
+        // 3. TEXTBOX
         TextField(
           controller: t1,
-          decoration: InputDecoration(
+          decoration: const InputDecoration(
             border: OutlineInputBorder(),
-            labelText: "Yazı Yazın",
+            labelText: "Görevin İsmi",
             fillColor: Colors.white, 
             filled: true,
           ),
         ),
-        SizedBox(height: 20),
-        Row(
-          children: [
-            Expanded(child: ElevatedButton(onPressed: mesajEkle, child: Text("Gönder"))),
-            SizedBox(width: 5),
-            Expanded(child: ElevatedButton(onPressed: sonMesajSil, child: Text("Son Sil"))),
-            SizedBox(width: 5),
-            Expanded(child: ElevatedButton(onPressed: tumMesajSil, child: Text("Tüm Sil"))),
-          ],
+        const SizedBox(height: 30),
+
+        // 4. KAYDET BUTONU
+        ElevatedButton(
+          onPressed: mesajEkle,
+          style: ElevatedButton.styleFrom(
+            backgroundColor: Colors.green, // Yeşil buton
+            foregroundColor: Colors.white,
+            padding: const EdgeInsets.symmetric(vertical: 15), // Butonu biraz şişmanlaştırdık
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(10),
+            )
+          ),
+          child: const Text("Kaydet", style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold)),
         ),
       ],
     );
@@ -271,7 +322,6 @@ class _AnaIskeletState extends State<AnaIskelet> {
     return Scaffold(
       backgroundColor: const Color(0xFFFCEEED), 
       
-      // DEĞİŞKEN GÖVDE: Menüden hangisi seçiliyse sadece o "Widget" ekrana basılır.
       body: SafeArea(
         child: Padding(
           padding: const EdgeInsets.all(16.0), 
@@ -281,8 +331,11 @@ class _AnaIskeletState extends State<AnaIskelet> {
         ),
       ),
 
-      // SABİT ALT MENÜ
-      bottomNavigationBar: Container(
+      // --- SİHİRLİ DOKUNUŞ: ALT MENÜNÜN GİZLENMESİ ---
+      // Eğer seciliMenuIndex 2 (Ekleme Sayfası) ise menüyü 'null' yapıp gizle. Değilse göster.
+      bottomNavigationBar: seciliMenuIndex == 2 
+      ? null 
+      : Container(
         color: Colors.white, 
         child: SafeArea( 
           child: Padding(
@@ -290,31 +343,14 @@ class _AnaIskeletState extends State<AnaIskelet> {
             child: Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween, 
               children: [
-                // 1. İKON (Anasayfa - Index: 0)
-                IconButton(
-                  icon: Icon(Icons.home, size: 30, color: seciliMenuIndex == 0 ? const Color(0xFFD63E63) : Colors.grey), 
-                  onPressed: () { setState(() { seciliMenuIndex = 0; }); }, 
-                ),
-                // 2. İKON (İstatistik - Index: 1)
-                IconButton(
-                  icon: Icon(Icons.bar_chart, size: 30, color: seciliMenuIndex == 1 ? const Color(0xFFD63E63) : Colors.grey),
-                  onPressed: () { setState(() { seciliMenuIndex = 1; }); }, 
-                ),
-                // 3. İKON (Ekleme Butonu - Index: 2)
+                IconButton(icon: Icon(Icons.home, size: 30, color: seciliMenuIndex == 0 ? const Color(0xFFD63E63) : Colors.grey), onPressed: () { setState(() { seciliMenuIndex = 0; }); }),
+                IconButton(icon: Icon(Icons.bar_chart, size: 30, color: seciliMenuIndex == 1 ? const Color(0xFFD63E63) : Colors.grey), onPressed: () { setState(() { seciliMenuIndex = 1; }); }),
                 IconButton(
                   icon: Icon(Icons.add_circle, size: 45, color: seciliMenuIndex == 2 ? const Color(0xFFD63E63) : Colors.green), 
-                  onPressed: () { setState(() { eklemeSecenekleriniGoster(); }); }, 
+                  onPressed: () { eklemeSecenekleriniGoster(); }, 
                 ),
-                // 4. İKON (Hedefler - Index: 3)
-                IconButton(
-                  icon: Icon(Icons.track_changes, size: 30, color: seciliMenuIndex == 3 ? const Color(0xFFD63E63) : Colors.grey),
-                  onPressed: () { setState(() { seciliMenuIndex = 3; }); }, 
-                ),
-                // 5. İKON (Profil - Index: 4)
-                IconButton(
-                  icon: Icon(Icons.person, size: 30, color: seciliMenuIndex == 4 ? const Color(0xFFD63E63) : Colors.grey),
-                  onPressed: () { setState(() { seciliMenuIndex = 4; }); }, 
-                ),
+                IconButton(icon: Icon(Icons.track_changes, size: 30, color: seciliMenuIndex == 3 ? const Color(0xFFD63E63) : Colors.grey), onPressed: () { setState(() { seciliMenuIndex = 3; }); }),
+                IconButton(icon: Icon(Icons.person, size: 30, color: seciliMenuIndex == 4 ? const Color(0xFFD63E63) : Colors.grey), onPressed: () { setState(() { seciliMenuIndex = 4; }); }),
               ],
             ),
           ),
@@ -323,6 +359,3 @@ class _AnaIskeletState extends State<AnaIskelet> {
     );
   }
 }
-
-
-
